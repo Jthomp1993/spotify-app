@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
-var request = require('request');
+const request = require('request');
 const { response } = require('express');
 
 const app = express();
@@ -20,7 +20,6 @@ app.get('/', (req, res) => {
  * @param {number} length The length of the string
  * @return {string} The generated string
 */
-
 const generateRandomString = length => {
     let text = '';
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWQYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -67,18 +66,17 @@ app.get('/callback', (req, res) => {
     })
         .then(response => {
             if(response.status === 200) {
-                const {access_token, token_type} = response.data;
-                const {refresh_token} = response.data;
-
-                axios.get(`http://localhost:8888/refresh_token?refresh_token=${refresh_token}`)
-                .then(response => {
-                    res.send(`<pre>${JSON.stringify(response.data, null, 2)}</pre>`)
-                })
-                .catch(error => {
-                    res.send(error);
-                });
+                const {access_token, refresh_token} = response.data;
+                const queryParams = new URLSearchParams({
+                    access_token,
+                    refresh_token
+                }).toString();
+                // Redirect to react app
+                res.redirect(`http://localhost:3000/?${queryParams}`);
+                // Pass token along in query params
+                
             } else {
-                res.send(response);
+                res.redirect(`/?${new URLSearchParams({error: 'invalid token'}).toString()}`);
             }
         })
         .catch(error => {
@@ -86,31 +84,7 @@ app.get('/callback', (req, res) => {
         })   
 })
 
-/** 
-app.get('/refresh_token' , (req, res) => {
-    const {refresh_token} = req.query.refresh_token;
-
-    axios({
-        method: 'post',
-        url: 'https://accounts.spotify.com/api/token',
-        data: new URLSearchParams({
-            grant_type: refresh_token,
-            refresh_token: refresh_token
-        }),
-        headers: {
-            'content-type': 'application/x-www-form-urlencoded',
-            Authorization: `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`,
-        },    
-    })
-        .then(response => {
-            res.send(response.data)
-        })
-        .catch(error => {
-            res.send(error);
-        })
-})
-*/
-
+// Generates new access token once token has expired
 app.get('/refresh_token', function(req, res) {
 
     var refresh_token = req.query.refresh_token;
