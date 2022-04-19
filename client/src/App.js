@@ -12,6 +12,13 @@ function App() {
 
         console.log(accessToken);
         console.log(refreshToken);
+
+        if(refreshToken) {
+            fetch(`/refresh_token?refresh_token=${refreshToken}`)
+            .then(res => res.json())
+            .then(res => console.log(res))
+            .catch(err => console.error(err))
+        }
     }, [])
 
   return (
