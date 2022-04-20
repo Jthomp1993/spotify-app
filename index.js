@@ -39,11 +39,11 @@ app.get('/login', (req, res) => {
     var scope = 'user-read-private user-read-email';
 
     res.redirect('https://accounts.spotify.com/authorize?' + new URLSearchParams({
-        response_type: 'code',
         client_id: CLIENT_ID,
-        scope: scope,
+        response_type: 'code',
         redirect_uri: REDIRECT_URI,
         state: state,
+        scope: scope,
       }).toString());
 })
 
@@ -57,8 +57,45 @@ app.get('/callback', (req, res) => {
         data: new URLSearchParams({
             grant_type: 'authorization_code',
             code: code,
-            redirect_uri: REDIRECT_URI
-        }),
+            redirect_uri: REDIRECT_URI 
+        }).toString(),
+        headers: {
+            'content-type': 'application/x-www-form-urlencoded',
+            Authorization: `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`,
+        },    
+    })
+        .then(response => {
+            if(response.status === 200) {
+                const {access_token, refresh_token, expires_in } = response.data;
+                const queryParams = new URLSearchParams({
+                    access_token,
+                    refresh_token,
+                    expires_in
+                }).toString();
+                // Redirect to react app
+                res.redirect(`http://localhost:3000/?${queryParams}`);
+                // Pass token along in query params
+                
+            } else {
+                res.redirect(`/?${new URLSearchParams({error: 'invalid token'}).toString()}`);
+            }
+        })
+        .catch(error => {
+            res.send(error);
+        })   
+})
+
+// Generates new access token once token has expired
+app.get('/refresh_token', function(req, res) {
+
+    axios({
+        method: 'post',
+        url: 'https://accounts.spotify.com/api/token',
+        data: new URLSearchParams({
+            code: code,
+            redirect_uri: REDIRECT_URI,
+            grant_type: 'authorization_code'
+        }).toString(),
         headers: {
             'content-type': 'application/x-www-form-urlencoded',
             Authorization: `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')}`,
@@ -81,16 +118,18 @@ app.get('/callback', (req, res) => {
         })
         .catch(error => {
             res.send(error);
-        })   
-})
+        })
+  });
 
+
+/** 
 // Generates new access token once token has expired
 app.get('/refresh_token', function(req, res) {
 
     var refresh_token = req.query.refresh_token;
     var authOptions = {
       url: 'https://accounts.spotify.com/api/token',
-      headers: { 'Authorization': 'Basic ' + (Buffer.from(`${CLIENT_ID}` + ':' + `${CLIENT_SECRET}`).toString('base64')) },
+      headers: { 'Authorization': 'Basic ' + (Buffer.from(`${CLIENT_ID}` + ':' + `${CLIENT_SECRET}`).toString('base64'))},
       form: {
         grant_type: 'refresh_token',
         refresh_token: refresh_token
@@ -102,12 +141,12 @@ app.get('/refresh_token', function(req, res) {
       if (!error && response.statusCode === 200) {
         var access_token = body.access_token;
         res.send({
-          'access_token': access_token
+          'access_token': access_token,
         });
       }
     });
   });
-
+*/
 
 
 const port = 8888;
