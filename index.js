@@ -36,7 +36,10 @@ const stateKey = 'spotify_auth_state';
 app.get('/login', (req, res) => {
     const state = generateRandomString(16);
     res.cookie(stateKey, state);
-    var scope = 'user-read-private user-read-email';
+    var scope = [
+        'user-read-private',
+        'user-read-email',
+        'user-top-read'].join(' ');
 
     res.redirect('https://accounts.spotify.com/authorize?' + new URLSearchParams({
         client_id: CLIENT_ID,
