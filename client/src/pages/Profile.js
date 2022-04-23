@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { catchErrors } from '../utils';
 import { getCurrentUserProfile, getCurrentUserPlaylists, getTopArtists, getTopTracks } from '../Spotify';
 import { StyledHeader } from '../styles';
-import { SectionWrapper, ArtistGrid } from '../components';
+import { SectionWrapper, ArtistGrid, TrackList } from '../components';
 
 const Profile = () => {
     const [profile, setProfile] = useState(null);
@@ -23,7 +23,6 @@ const Profile = () => {
 
                 const userTopTracks = await getTopTracks();
                 setTopTracks(userTopTracks);
-                console.log(userTopTracks);
 
         }
 
@@ -56,10 +55,14 @@ const Profile = () => {
         </StyledHeader>
         )}
 
-        {topArtists && (
+        {topArtists && topTracks && (
             <main>
                 <SectionWrapper title="Top Artists in last 6 months" seeAllLink='/top-artists'>
                     <ArtistGrid artists={topArtists.data.items.slice(0,10)} />
+                </SectionWrapper>
+
+                <SectionWrapper title="Top Tracks in last 6 months" seeAllLink='/top-tracks'>
+                    <TrackList tracks={topTracks.data.items.slice(0,10)} />
                 </SectionWrapper>
             </main>
         )}
