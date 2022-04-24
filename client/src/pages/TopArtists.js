@@ -21,7 +21,7 @@ const TopArtists = () => {
             {topArtists && (
                 <SectionWrapper title="Top Artists" breadcrumb={true}>
                     <TimeRangeButtons activeRange={activeRange} setActiveRange={setActiveRange} />
-                    <ArtistGrid artists={topArtists.data.items.slice(0,10)} />
+                    <ArtistGrid artists={topArtists.data.items} />
                 </SectionWrapper>
             )}
         </main>
