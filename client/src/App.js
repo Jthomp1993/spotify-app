@@ -4,7 +4,7 @@ import styled from 'styled-components/macro';
 import { accessToken, logout, getCurrentUserProfile } from './Spotify';
 import { catchErrors } from './utils';
 import { GlobalStyle, StyledHeader } from './styles';
-import { Login, Profile, TopArtists, TopTracks, Playlists } from './pages';
+import { Login, Profile, TopArtists, TopTracks, Playlists, Playlist } from './pages';
 
 const StyledLogoutButton = styled.button`
   position: absolute;
@@ -44,7 +44,6 @@ function App() {
         const fetchData = async () => {
                 const { data } = await getCurrentUserProfile();
                 setProfile(data);
-                console.log(data);
             
         }
 
@@ -65,7 +64,7 @@ function App() {
             <Routes>
                 <Route path="/top-artists" element={<TopArtists />}></Route>
                 <Route path="/top-tracks" element={<TopTracks />}></Route>
-                <Route path="/playlists/:id" element={<h1>Playlist</h1>}></Route>
+                <Route path="/playlists/:id" element={<Playlist />}></Route>
                 <Route path="/playlists" element={<Playlists />}></Route>
                 <Route path="/" element={
                     <Profile />

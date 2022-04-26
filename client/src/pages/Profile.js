@@ -17,7 +17,6 @@ const Profile = () => {
 
                 const userPlaylists = await getCurrentUserPlaylists();
                 setPlaylists(userPlaylists.data);
-                console.log(userPlaylists.data);
                 
                 const userTopArtists = await getTopArtists();
                 setTopArtists(userTopArtists);
