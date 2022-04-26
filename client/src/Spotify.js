@@ -179,3 +179,17 @@ export const getTopArtists = (time_range = 'short_term') => {
  export const getPlaylistById = playlist_id => {
     return axios.get(`/playlists/${playlist_id}`);
   }
+
+
+/**
+ * Get audio features for several tracks
+ * https://developer.spotify.com/documentation/web-api/reference/#/operations/get-several-audio-features
+ * @param {string} ids - A comma-seperated list of the Spotify Id's for the tracks
+ * @returns {promise}
+ */
+
+export const getAudioFeaturesForTracks = (ids) => {
+    return axios.get(`/audio-features?ids=${ids}`);
+}
+
+
