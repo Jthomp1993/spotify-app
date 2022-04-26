@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { getPlaylistById, getAudioFeaturesForTracks } from '../Spotify';
 import { catchErrors } from '../utils';
 import { StyledHeader, StyledDropdown } from '../styles';
-import { TrackList, SectionWrapper } from '../components';
+import { TrackList, SectionWrapper, Loader } from '../components';
 
 const Playlist = () => {
     const [playlist, setPlaylist] = useState(null);
@@ -143,8 +143,10 @@ const Playlist = () => {
                 </select>
             </StyledDropdown>
 
-            {sortedTracks && (
+            {sortedTracks ? (
                 <TrackList tracks={sortedTracks} />
+            ) : (
+                <Loader />
             )}
             </SectionWrapper>
           </main>
