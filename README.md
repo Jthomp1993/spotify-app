@@ -1,5 +1,7 @@
 # Spotify Connected App
 
+You can view the project [here](https://spotify-profile-app-v1.herokuapp.com/)
+
 End product of the "Build a Spotify Connected App" newline course
 
 ## Local Installation & Set Up
