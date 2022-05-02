@@ -3,12 +3,18 @@ const express = require('express');
 const axios = require('axios');
 const request = require('request');
 const { response } = require('express');
+const path = require('path');
 
 const app = express();
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
+const FRONTEND_URI = process.env.FRONTEND_URI;
+const PORT = process.env.PORT || 8888;
+
+//  Priority serve any static files
+app.use(express.static(path.resolve(__dirname, './client/build')));
 
 
 app.get('/', (req, res) => {
@@ -76,7 +82,7 @@ app.get('/callback', (req, res) => {
                     expires_in
                 }).toString();
                 // Redirect to react app
-                res.redirect(`http://localhost:3000/?${queryParams}`);
+                res.redirect(`${FRONTEND_URI}?${queryParams}`);
                 // Pass token along in query params
                 
             } else {
@@ -122,37 +128,14 @@ app.get('/refresh_token', function(req, res) {
         .catch(error => {
             res.send(error);
         })
+});
+
+// All remaining requests return the React app, so it can handle routing.
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, './client/build', 'index.html'));
   });
 
 
-/** 
-// Generates new access token once token has expired
-app.get('/refresh_token', function(req, res) {
-
-    var refresh_token = req.query.refresh_token;
-    var authOptions = {
-      url: 'https://accounts.spotify.com/api/token',
-      headers: { 'Authorization': 'Basic ' + (Buffer.from(`${CLIENT_ID}` + ':' + `${CLIENT_SECRET}`).toString('base64'))},
-      form: {
-        grant_type: 'refresh_token',
-        refresh_token: refresh_token
-      },
-      json: true
-    };
-  
-    request.post(authOptions, function(error, response, body) {
-      if (!error && response.statusCode === 200) {
-        var access_token = body.access_token;
-        res.send({
-          'access_token': access_token,
-        });
-      }
-    });
-  });
-*/
-
-
-const port = 8888;
-app.listen(port, (req, res) => {
-    console.log(`Express app listening on http://localhost:${port}`);
+app.listen(PORT, (req, res) => {
+    console.log(`Express app listening on http://localhost:${PORT}`);
 })
